@@ -127,9 +127,16 @@ export function useRoom({
 
   const leave = useCallback(async () => {
     try {
+      const room = roomRef.current;
       await localMemberRef.current?.leave();
       localMemberRef.current = null;
-      await roomRef.current?.dispose();
+
+      // 自分が最後のメンバーだった場合はルームを永続的にclose
+      if (room && room.members.length === 0) {
+        await room.close();
+      }
+
+      await room?.dispose();
       roomRef.current = null;
       isJoinedRef.current = false;
       dispatch({ type: "DISCONNECTED" });
