@@ -35,6 +35,9 @@ use-skyway/
 
 ルームの参加・退出・接続状態を管理します。
 
+このライブラリでは `roomType` 未指定時に `default Room` を使用します。
+通信方式（`p2p` / `sfu`）は `publish` 時に指定する運用を想定しています。
+
 | オプション | 型 | デフォルト | 説明 |
 |---|---|---|---|
 | `roomName` | `string` | 必須 | ルーム名 |
@@ -46,10 +49,18 @@ use-skyway/
 ### その他のフック
 
 - `useSkywayContext` — Provider で初期化した SkyWayContext を取得
-- `useLocalPerson` — ローカルの publish とマイク・カメラ制御
+- `useLocalPerson` — ローカルの publish とマイク・カメラ制御（`publishVideo` / `publishAudio` は `PublicationOptions` を受け取り、`type` 指定可能）
 - `useRemotePersons` — リモート参加者管理と subscribe 補助
 - `useMediaStream` — カメラ・マイク・画面共有ストリーム取得
 - `useWebRTCStats` — RTT・パケットロス・ビットレート取得
+
+## 通信方式の指定方針
+
+- ルーム参加: `useRoom({ roomName })`（default Room）
+- 通信方式の選択: `publish` 時に `type` で指定
+- サンプルアプリ: `publishVideo(stream, { type: "p2p" })` / `publishAudio(stream, { type: "p2p" })`
+
+将来的にサーバー側ポリシーで方式を決める場合でも、クライアントは `publish` オプションを差し替えるだけで対応できます。
 
 ## セットアップ
 
@@ -126,14 +137,28 @@ cp apps/example-next-app/.env.local.example apps/example-next-app/.env.local
 ```tsx
 "use client";
 
-import { SkyWayProvider, useRoom } from "@use-skyway/react-hooks";
+import {
+  SkyWayProvider,
+  useLocalPerson,
+  useMediaStream,
+  useRoom,
+} from "@use-skyway/react-hooks";
 
 function Demo() {
-  const { join, leave, isConnected } = useRoom({ roomName: "demo" });
+  const { localMember, join, leave, isConnected } = useRoom({ roomName: "demo" });
+  const { requestMediaStream } = useMediaStream();
+  const { publishVideo, publishAudio } = useLocalPerson({ localMember });
+
+  const handleJoin = async () => {
+    const { video, audio } = await requestMediaStream();
+    await join();
+    if (video) await publishVideo(video, { type: "p2p" });
+    if (audio) await publishAudio(audio, { type: "p2p" });
+  };
 
   return (
     <div>
-      <button type="button" onClick={() => void join()}>Join</button>
+      <button type="button" onClick={() => void handleJoin()}>Join</button>
       <button type="button" onClick={() => void leave()}>Leave</button>
       <p>{isConnected ? "connected" : "disconnected"}</p>
     </div>
