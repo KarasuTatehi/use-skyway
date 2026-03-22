@@ -85,13 +85,15 @@ export function useRoom({
   const isJoiningRef = useRef(false);
   const isJoinedRef = useRef(false);
 
-  // roomName / roomType / joinOptions は ref 経由で最新値を読む
+  // roomName / roomType / joinOptions / closeOnEmpty は ref 経由で最新値を読む
   const roomNameRef = useRef(roomName);
   const roomTypeRef = useRef(roomType);
   const joinOptionsRef = useRef(joinOptions);
+  const closeOnEmptyRef = useRef(closeOnEmpty);
   roomNameRef.current = roomName;
   roomTypeRef.current = roomType;
   joinOptionsRef.current = joinOptions;
+  closeOnEmptyRef.current = closeOnEmpty;
 
   const join = useCallback(
     async (overrideOptions?: { name?: string; metadata?: string }) => {
@@ -133,7 +135,7 @@ export function useRoom({
       localMemberRef.current = null;
 
       // 自分が最後のメンバーだった場合はルームを永続的にclose
-      if (closeOnEmpty && room && room.members.length === 0) {
+      if (closeOnEmptyRef.current && room && room.members.length === 0) {
         await room.close();
       }
 
