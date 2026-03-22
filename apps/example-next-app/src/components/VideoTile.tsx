@@ -6,7 +6,7 @@ import type {
   RemoteAudioStream,
   RemoteVideoStream,
 } from "@use-skyway/react-hooks";
-import { memo, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./VideoTile.module.css";
 
 interface VideoTileProps {
@@ -23,12 +23,7 @@ interface VideoTileProps {
  * - ローカル: <video> に LocalVideoStream.attach()
  * - リモート: <video> に RemoteVideoStream.attach() + Audio インスタンスに RemoteAudioStream.attach()
  */
-export const VideoTile = memo(function VideoTile({
-  isLocal,
-  displayName,
-  videoStream,
-  audioStream,
-}: VideoTileProps) {
+export function VideoTile({ isLocal, displayName, videoStream, audioStream }: VideoTileProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -81,4 +76,4 @@ export const VideoTile = memo(function VideoTile({
       </div>
     </div>
   );
-});
+}
