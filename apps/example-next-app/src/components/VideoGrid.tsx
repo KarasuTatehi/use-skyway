@@ -6,6 +6,7 @@ import type {
   LocalVideoStream,
   RemotePersonState,
 } from "@use-skyway/react-hooks";
+import { memo } from "react";
 import styles from "./VideoGrid.module.css";
 import { VideoTile } from "./VideoTile";
 
@@ -19,7 +20,7 @@ interface VideoGridProps {
 /**
  * ローカル・リモートのビデオタイルをグリッドレイアウトで表示するコンポーネント。
  */
-export function VideoGrid({
+export const VideoGrid = memo(function VideoGrid({
   localMember,
   localVideoStream,
   localAudioStream,
@@ -57,4 +58,4 @@ export function VideoGrid({
       ))}
     </div>
   );
-}
+});

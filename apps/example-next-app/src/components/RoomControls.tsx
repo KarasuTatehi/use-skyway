@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import styles from "./RoomControls.module.css";
 
 interface RoomControlsProps {
@@ -20,7 +21,7 @@ interface RoomControlsProps {
 /**
  * ルーム操作コントロールバー（参加・退出・マイク・カメラ切替）。
  */
-export function RoomControls({
+export const RoomControls = memo(function RoomControls({
   isConnected,
   isConnecting,
   isVideoEnabled,
@@ -88,7 +89,7 @@ export function RoomControls({
       )}
     </div>
   );
-}
+});
 
 // ----------------------------------------------------------------
 // ControlButton（汎用ピルボタン）
