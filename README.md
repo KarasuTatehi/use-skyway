@@ -38,7 +38,7 @@ use-skyway/
 | オプション | 型 | デフォルト | 説明 |
 |---|---|---|---|
 | `roomName` | `string` | 必須 | ルーム名 |
-| `roomType` | `"p2p" \| "sfu"` | `"p2p"` | ルームタイプ |
+| `roomType` | `"default" \| "p2p" \| "sfu"` | `"default"` | ルームタイプ（未指定時は default Room） |
 | `autoJoin` | `boolean` | `false` | マウント時に自動参加 |
 | `joinOptions` | `{ name?: string; metadata?: string }` | — | `join()` に渡す追加オプション |
 | `closeOnEmpty` | `boolean` | `true` | 最後のメンバーが退出したとき `room.close()` を呼ぶか |
@@ -129,7 +129,7 @@ cp apps/example-next-app/.env.local.example apps/example-next-app/.env.local
 import { SkyWayProvider, useRoom } from "@use-skyway/react-hooks";
 
 function Demo() {
-  const { join, leave, isConnected } = useRoom({ roomName: "demo", roomType: "p2p" });
+  const { join, leave, isConnected } = useRoom({ roomName: "demo" });
 
   return (
     <div>

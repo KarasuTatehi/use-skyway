@@ -76,8 +76,8 @@ export interface SkyWayContextValue {
 export interface UseRoomOptions {
   /** ルーム名 */
   roomName: string;
-  /** ルームタイプ（デフォルト: "p2p"）*/
-  roomType?: Exclude<import("@skyway-sdk/room").RoomType, "default">;
+  /** ルームタイプ（デフォルト: "default"。未指定時は type を渡さない）*/
+  roomType?: import("@skyway-sdk/room").RoomType;
   /** マウント時に自動的にルームに参加するか（デフォルト: false）*/
   autoJoin?: boolean;
   /** join() に渡すオプション */

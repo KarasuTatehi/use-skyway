@@ -62,14 +62,14 @@ function roomReducer(state: RoomState, action: RoomAction): RoomState {
  * ```tsx
  * const { room, localMember, isConnected, join, leave } = useRoom({
  *   roomName: "my-room",
- *   roomType: "p2p",
+ *   // roomType 未指定で default Room
  *   autoJoin: true,
  * });
  * ```
  */
 export function useRoom({
   roomName,
-  roomType = "p2p",
+  roomType,
   autoJoin = false,
   joinOptions,
   closeOnEmpty = true,
@@ -103,10 +103,12 @@ export function useRoom({
       isJoiningRef.current = true;
       dispatch({ type: "CONNECTING" });
       try {
-        const room = await SkyWayRoom.FindOrCreate(skywayContext, {
-          type: roomTypeRef.current,
-          name: roomNameRef.current,
-        });
+        const currentRoomType = roomTypeRef.current;
+        const roomInit =
+          currentRoomType && currentRoomType !== "default"
+            ? { type: currentRoomType, name: roomNameRef.current }
+            : { name: roomNameRef.current };
+        const room = await SkyWayRoom.FindOrCreate(skywayContext, roomInit);
         roomRef.current = room;
 
         const opts = overrideOptions ?? joinOptionsRef.current;
