@@ -1,6 +1,7 @@
 "use client";
 
 import type {
+  LocalAudioStream,
   LocalVideoStream,
   RemoteAudioStream,
   RemoteVideoStream,
@@ -13,7 +14,7 @@ interface VideoTileProps {
   displayName: string;
   /** LocalVideoStream | RemoteVideoStream | null */
   videoStream: LocalVideoStream | RemoteVideoStream | null;
-  audioStream: RemoteAudioStream | null;
+  audioStream: LocalAudioStream | RemoteAudioStream | null;
 }
 
 /**
@@ -46,7 +47,14 @@ export function VideoTile({ isLocal, displayName, videoStream, audioStream }: Vi
       audioRef.current = audioEl;
     }
 
-    audioStream.attach(audioRef.current);
+    const audioEl = audioRef.current;
+    if (!audioEl) return;
+
+    audioStream.attach(audioEl);
+    void audioEl.play().catch((error) => {
+      console.warn("[VideoTile] audio play was blocked or failed:", error);
+    });
+
     return () => {
       audioStream.detach();
     };

@@ -1,19 +1,30 @@
 "use client";
 
-import type { LocalRoomMember, LocalVideoStream, RemotePersonState } from "@use-skyway/react-hooks";
+import type {
+  LocalAudioStream,
+  LocalRoomMember,
+  LocalVideoStream,
+  RemotePersonState,
+} from "@use-skyway/react-hooks";
 import styles from "./VideoGrid.module.css";
 import { VideoTile } from "./VideoTile";
 
 interface VideoGridProps {
   localMember: LocalRoomMember | null;
   localVideoStream: LocalVideoStream | null;
+  localAudioStream: LocalAudioStream | null;
   remotePersons: RemotePersonState[];
 }
 
 /**
  * ローカル・リモートのビデオタイルをグリッドレイアウトで表示するコンポーネント。
  */
-export function VideoGrid({ localMember, localVideoStream, remotePersons }: VideoGridProps) {
+export function VideoGrid({
+  localMember,
+  localVideoStream,
+  localAudioStream,
+  remotePersons,
+}: VideoGridProps) {
   const totalCount = (localMember ? 1 : 0) + remotePersons.length;
 
   if (!localMember) {
@@ -31,7 +42,7 @@ export function VideoGrid({ localMember, localVideoStream, remotePersons }: Vide
         isLocal
         displayName={localMember.name ?? "あなた"}
         videoStream={localVideoStream}
-        audioStream={null}
+        audioStream={localAudioStream}
       />
 
       {/* リモート参加者 */}

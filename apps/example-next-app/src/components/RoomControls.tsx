@@ -9,10 +9,12 @@ interface RoomControlsProps {
   isAudioEnabled: boolean;
   isVideoPublishing: boolean;
   isAudioPublishing: boolean;
+  isSelfMonitorEnabled: boolean;
   onJoin(): void;
   onLeave(): void;
   onToggleVideo(): void;
   onToggleAudio(): void;
+  onToggleSelfMonitor(): void;
 }
 
 /**
@@ -25,10 +27,12 @@ export function RoomControls({
   isAudioEnabled,
   isVideoPublishing,
   isAudioPublishing,
+  isSelfMonitorEnabled,
   onJoin,
   onLeave,
   onToggleVideo,
   onToggleAudio,
+  onToggleSelfMonitor,
 }: RoomControlsProps) {
   return (
     <div className={styles.bar}>
@@ -49,6 +53,16 @@ export function RoomControls({
           label={isAudioEnabled ? "ミュート" : "ミュート解除"}
           icon={isAudioEnabled ? "🎙️" : "🔇"}
           isActive={!isAudioEnabled}
+        />
+      )}
+
+      {/* 自己モニター切替（参加後のみ表示）*/}
+      {isConnected && isAudioPublishing && (
+        <ControlButton
+          onClick={onToggleSelfMonitor}
+          label={isSelfMonitorEnabled ? "自分の音声OFF" : "自分の音声ON"}
+          icon={isSelfMonitorEnabled ? "🔊" : "🔕"}
+          isActive={!isSelfMonitorEnabled}
         />
       )}
 

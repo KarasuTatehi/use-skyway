@@ -11,7 +11,7 @@ import {
   useWebRTCStats,
 } from "@use-skyway/react-hooks";
 import { useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./room.module.css";
 
 // ----------------------------------------------------------------
@@ -22,8 +22,17 @@ interface RoomInnerProps {
   roomName: string;
 }
 
+function isAlreadyPublishedError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes("alreadyPublishedStream");
+}
+
 function RoomInner({ roomName }: RoomInnerProps) {
   const router = useRouter();
+  const videoPublishRequestedRef = useRef(false);
+  const audioPublishRequestedRef = useRef(false);
+  const [isSelfMonitorEnabled, setIsSelfMonitorEnabled] = useState(true);
+  const toggleSelfMonitor = useCallback(() => setIsSelfMonitorEnabled((prev) => !prev), []);
 
   // 1. ルーム管理
   const { room, localMember, isConnecting, isConnected, error, join, leave } = useRoom({
@@ -51,7 +60,12 @@ function RoomInner({ roomName }: RoomInnerProps) {
   const { remotePersons } = useRemotePersons({ room, localMember });
 
   // 4. メディアストリーム取得
-  const { requestMediaStream, isLoading: isMediaLoading } = useMediaStream();
+  const {
+    localVideoStream,
+    localAudioStream,
+    requestMediaStream,
+    isLoading: isMediaLoading,
+  } = useMediaStream();
 
   // 5. WebRTC 統計
   const { stats } = useWebRTCStats(room, localMember, { intervalMs: 5000 });
@@ -61,11 +75,55 @@ function RoomInner({ roomName }: RoomInnerProps) {
   // ----------------------------------------------------------------
 
   const handleJoin = useCallback(async () => {
-    const { video, audio } = await requestMediaStream();
+    videoPublishRequestedRef.current = false;
+    audioPublishRequestedRef.current = false;
+    await requestMediaStream();
     await join();
-    if (video) await publishVideo(video);
-    if (audio) await publishAudio(audio);
-  }, [requestMediaStream, join, publishVideo, publishAudio]);
+  }, [requestMediaStream, join]);
+
+  // join 後に localMember が確定してから publish する
+  useEffect(() => {
+    if (!localMember) return;
+
+    if (localVideoStream && !isVideoPublishing && !videoPublishRequestedRef.current) {
+      videoPublishRequestedRef.current = true;
+      void publishVideo(localVideoStream).catch((error) => {
+        if (!isAlreadyPublishedError(error)) {
+          console.error("Failed to publish video stream:", error);
+          videoPublishRequestedRef.current = false;
+        }
+      });
+    }
+    if (localAudioStream && !isAudioPublishing && !audioPublishRequestedRef.current) {
+      audioPublishRequestedRef.current = true;
+      void publishAudio(localAudioStream).catch((error) => {
+        if (!isAlreadyPublishedError(error)) {
+          console.error("Failed to publish audio stream:", error);
+          audioPublishRequestedRef.current = false;
+        }
+      });
+    }
+  }, [
+    localMember,
+    localVideoStream,
+    localAudioStream,
+    isVideoPublishing,
+    isAudioPublishing,
+    publishVideo,
+    publishAudio,
+  ]);
+
+  useEffect(() => {
+    if (!localVideoStream) {
+      videoPublishRequestedRef.current = false;
+    }
+  }, [localVideoStream]);
+
+  useEffect(() => {
+    if (!localAudioStream) {
+      audioPublishRequestedRef.current = false;
+    }
+  }, [localAudioStream]);
 
   const handleLeave = useCallback(async () => {
     await unpublishVideo();
@@ -113,6 +171,7 @@ function RoomInner({ roomName }: RoomInnerProps) {
       <VideoGrid
         localMember={localMember}
         localVideoStream={isVideoPublishing ? videoStream : null}
+        localAudioStream={isAudioPublishing && isSelfMonitorEnabled ? audioStream : null}
         remotePersons={remotePersons}
       />
 
@@ -124,10 +183,12 @@ function RoomInner({ roomName }: RoomInnerProps) {
         isAudioEnabled={isAudioEnabled}
         isVideoPublishing={isVideoPublishing}
         isAudioPublishing={isAudioPublishing}
+        isSelfMonitorEnabled={isSelfMonitorEnabled}
         onJoin={handleJoin}
         onLeave={handleLeave}
         onToggleVideo={toggleVideo}
         onToggleAudio={toggleAudio}
+        onToggleSelfMonitor={toggleSelfMonitor}
       />
     </div>
   );

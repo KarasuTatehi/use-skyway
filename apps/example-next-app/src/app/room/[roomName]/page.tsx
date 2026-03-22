@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { RoomPageClient } from "./RoomPageClient";
+import { RoomPageClientLoader } from "./RoomPageClientLoader";
 
 interface Props {
   params: Promise<{ roomName: string }>;
@@ -52,5 +52,5 @@ export default async function RoomPage({ params }: Props) {
 
   const { token } = (await res.json()) as { token: string };
 
-  return <RoomPageClient roomName={roomName} initialToken={token} />;
+  return <RoomPageClientLoader roomName={roomName} initialToken={token} />;
 }
