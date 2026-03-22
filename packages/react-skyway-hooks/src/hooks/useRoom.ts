@@ -131,11 +131,13 @@ export function useRoom({
   const leave = useCallback(async () => {
     try {
       const room = roomRef.current;
+      // leave() 前に判定 — leave() 後は SDK がメンバーリストを更新するタイミングが不確定
+      const shouldClose = closeOnEmptyRef.current && room != null && room.members.length <= 1;
+
       await localMemberRef.current?.leave();
       localMemberRef.current = null;
 
-      // 自分が最後のメンバーだった場合はルームを永続的にclose
-      if (closeOnEmptyRef.current && room && room.members.length === 0) {
+      if (shouldClose && room) {
         await room.close();
       }
 
@@ -159,13 +161,20 @@ export function useRoom({
   useEffect(() => {
     return () => {
       const room = roomRef.current;
-      void localMemberRef.current?.leave().catch(console.error);
-      localMemberRef.current = null;
-      if (closeOnEmptyRef.current && room && room.members.length === 0) {
-        void room.close().catch(console.error);
-      }
-      void room?.dispose().catch(console.error);
+      const localMember = localMemberRef.current;
+      // leave() 前に判定（同期）
+      const shouldClose = closeOnEmptyRef.current && room != null && room.members.length <= 1;
       roomRef.current = null;
+      localMemberRef.current = null;
+
+      // 非同期クリーンアップを正しくチェーン
+      void (async () => {
+        await localMember?.leave().catch(console.error);
+        if (shouldClose && room) {
+          await room.close().catch(console.error);
+        }
+        await room?.dispose().catch(console.error);
+      })();
     };
   }, []);
 
