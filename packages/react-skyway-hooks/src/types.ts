@@ -82,6 +82,11 @@ export interface UseRoomOptions {
   autoJoin?: boolean;
   /** join() に渡すオプション */
   joinOptions?: { name?: string; metadata?: string };
+  /**
+   * 自分が最後のメンバーとして退出した際に room.close() を呼ぶか（デフォルト: true）。
+   * false にするとルームを残したまま退出できます。
+   */
+  closeOnEmpty?: boolean;
 }
 
 export interface UseRoomReturn {

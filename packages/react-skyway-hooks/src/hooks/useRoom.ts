@@ -72,6 +72,7 @@ export function useRoom({
   roomType = "p2p",
   autoJoin = false,
   joinOptions,
+  closeOnEmpty = true,
 }: UseRoomOptions): UseRoomReturn {
   const { skywayContext } = useSkywayContext();
   const [state, dispatch] = useReducer(roomReducer, initialState);
@@ -132,7 +133,7 @@ export function useRoom({
       localMemberRef.current = null;
 
       // 自分が最後のメンバーだった場合はルームを永続的にclose
-      if (room && room.members.length === 0) {
+      if (closeOnEmpty && room && room.members.length === 0) {
         await room.close();
       }
 
