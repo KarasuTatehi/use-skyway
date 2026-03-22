@@ -84,6 +84,7 @@ export function useRoom({
   // join の重複実行を ref で防ぐ（state を deps にしないための安全弁）
   const isJoiningRef = useRef(false);
   const isJoinedRef = useRef(false);
+  const isClosingRef = useRef(false);
 
   // roomName / roomType / joinOptions / closeOnEmpty は ref 経由で最新値を読む
   const roomNameRef = useRef(roomName);
@@ -137,8 +138,11 @@ export function useRoom({
       await localMemberRef.current?.leave();
       localMemberRef.current = null;
 
-      if (shouldClose && room) {
-        await room.close();
+      if (shouldClose && room && !isClosingRef.current) {
+        isClosingRef.current = true;
+        await room.close().finally(() => {
+          isClosingRef.current = false;
+        });
       }
 
       await room?.dispose();
@@ -157,6 +161,40 @@ export function useRoom({
     }
   }, [autoJoin, skywayContext, join]);
 
+  // 自分が最後の1人になった瞬間にもルームを自動 close する
+  useEffect(() => {
+    if (!closeOnEmpty || !state.room || !state.localMember) return;
+
+    const room = state.room;
+    const myMemberId = state.localMember.id;
+
+    const closeIfOnlySelfRemains = async () => {
+      if (isClosingRef.current) return;
+      const includesMe = room.members.some((member) => member.id === myMemberId);
+      if (!includesMe || room.members.length !== 1) return;
+
+      isClosingRef.current = true;
+      await room
+        .close()
+        .catch(console.error)
+        .finally(() => {
+          isClosingRef.current = false;
+        });
+    };
+
+    const leftListener = room.onMemberLeft.add(() => {
+      void closeIfOnlySelfRemains();
+    });
+    const listChangedListener = room.onMemberListChanged.add(() => {
+      void closeIfOnlySelfRemains();
+    });
+
+    return () => {
+      leftListener.removeListener();
+      listChangedListener.removeListener();
+    };
+  }, [closeOnEmpty, state.room, state.localMember]);
+
   // アンマウント時にリソースを解放
   useEffect(() => {
     return () => {
@@ -170,8 +208,14 @@ export function useRoom({
       // 非同期クリーンアップを正しくチェーン
       void (async () => {
         await localMember?.leave().catch(console.error);
-        if (shouldClose && room) {
-          await room.close().catch(console.error);
+        if (shouldClose && room && !isClosingRef.current) {
+          isClosingRef.current = true;
+          await room
+            .close()
+            .catch(console.error)
+            .finally(() => {
+              isClosingRef.current = false;
+            });
         }
         await room?.dispose().catch(console.error);
       })();
