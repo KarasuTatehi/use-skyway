@@ -37,7 +37,6 @@ function RoomInner({ roomName }: RoomInnerProps) {
   // 1. ルーム管理
   const { room, localMember, isConnecting, isConnected, error, join, leave } = useRoom({
     roomName,
-    roomType: "p2p",
   });
 
   // 2. ローカルメンバーのメディア制御
@@ -87,7 +86,7 @@ function RoomInner({ roomName }: RoomInnerProps) {
 
     if (localVideoStream && !isVideoPublishing && !videoPublishRequestedRef.current) {
       videoPublishRequestedRef.current = true;
-      void publishVideo(localVideoStream).catch((error) => {
+      void publishVideo(localVideoStream, { type: "p2p" }).catch((error) => {
         if (!isAlreadyPublishedError(error)) {
           console.error("Failed to publish video stream:", error);
           videoPublishRequestedRef.current = false;
@@ -96,7 +95,7 @@ function RoomInner({ roomName }: RoomInnerProps) {
     }
     if (localAudioStream && !isAudioPublishing && !audioPublishRequestedRef.current) {
       audioPublishRequestedRef.current = true;
-      void publishAudio(localAudioStream).catch((error) => {
+      void publishAudio(localAudioStream, { type: "p2p" }).catch((error) => {
         if (!isAlreadyPublishedError(error)) {
           console.error("Failed to publish audio stream:", error);
           audioPublishRequestedRef.current = false;
