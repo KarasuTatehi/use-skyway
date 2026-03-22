@@ -1,0 +1,28 @@
+## Dependencies
+node_modules/
+
+## Build outputs
+dist/
+out/
+.next/
+
+## Tooling cache
+.turbo/
+.pnpm-store/
+coverage/
+*.tsbuildinfo
+
+## Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+## Environment files
+.env
+.env.local
+.env.*.local
+
+## OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
