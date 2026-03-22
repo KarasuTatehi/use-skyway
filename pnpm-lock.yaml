@@ -20,6 +20,9 @@ importers:
       '@skyway-sdk/room':
         specifier: ^2.4.1
         version: 2.4.1(ws@8.20.0)
+      '@skyway-sdk/token':
+        specifier: ^2.1.0
+        version: 2.1.0
       '@use-skyway/react-hooks':
         specifier: workspace:*
         version: link:../../packages/react-skyway-hooks
@@ -32,6 +35,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
+      uuid:
+        specifier: ^13.0.0
+        version: 13.0.0
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.4
@@ -1489,6 +1495,10 @@ packages:
     peerDependencies:
       browserslist: '>= 4.21.0'
 
+  uuid@13.0.0:
+    resolution: {integrity: sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==}
+    hasBin: true
+
   uuid@9.0.1:
     resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
     hasBin: true
@@ -2927,6 +2937,8 @@ snapshots:
       browserslist: 4.28.1
       escalade: 3.2.0
       picocolors: 1.1.1
+
+  uuid@13.0.0: {}
 
   uuid@9.0.1: {}
 
