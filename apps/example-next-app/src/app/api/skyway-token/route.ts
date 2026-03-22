@@ -1,6 +1,5 @@
-import { SkyWayAuthToken } from "@skyway-sdk/token";
+import { SkyWayAuthToken, nowInSec, uuidV4 } from "@skyway-sdk/token";
 import { type NextRequest, NextResponse } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * GET /api/skyway-token
@@ -28,11 +27,11 @@ export async function GET(_req: NextRequest) {
   }
 
   try {
-    const now = Math.floor(Date.now() / 1000);
+    const now = nowInSec();
 
     // v3 スコープでトークンを生成
     const token = new SkyWayAuthToken({
-      jti: uuidv4(),
+      jti: uuidV4(),
       iat: now,
       exp: now + 24 * 60 * 60, // 24時間有効
       version: 3,
