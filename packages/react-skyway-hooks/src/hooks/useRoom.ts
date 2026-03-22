@@ -158,9 +158,13 @@ export function useRoom({
   // アンマウント時にリソースを解放
   useEffect(() => {
     return () => {
+      const room = roomRef.current;
       void localMemberRef.current?.leave().catch(console.error);
       localMemberRef.current = null;
-      void roomRef.current?.dispose().catch(console.error);
+      if (closeOnEmptyRef.current && room && room.members.length === 0) {
+        void room.close().catch(console.error);
+      }
+      void room?.dispose().catch(console.error);
       roomRef.current = null;
     };
   }, []);
