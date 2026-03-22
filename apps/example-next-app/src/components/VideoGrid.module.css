@@ -1,0 +1,53 @@
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.emptyText {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  overflow-y: auto;
+  align-content: start;
+}
+
+/* 参加人数に応じたグリッドレイアウト */
+.grid[data-count="1"] {
+  grid-template-columns: 1fr;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.grid[data-count="2"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid[data-count="3"],
+.grid[data-count="4"] {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid[data-count="5"],
+.grid[data-count="6"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid[data-count="7"],
+.grid[data-count="8"],
+.grid[data-count="9"] {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr !important;
+  }
+}

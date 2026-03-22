@@ -1,0 +1,54 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.controlButton {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: var(--color-border);
+  color: var(--color-text);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  transition: background 0.15s;
+}
+
+.controlButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-border) 60%, var(--color-text) 15%);
+}
+
+.controlButton.inactive {
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 40%, transparent);
+}
+
+.joinButton {
+  background: var(--color-primary);
+  color: #fff;
+  padding: 0.625rem 2rem;
+  font-size: 0.9375rem;
+}
+
+.joinButton:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.leaveButton {
+  background: color-mix(in srgb, var(--color-danger) 15%, transparent);
+  color: var(--color-danger);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  padding: 0.625rem 2rem;
+  font-size: 0.9375rem;
+}
+
+.leaveButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
