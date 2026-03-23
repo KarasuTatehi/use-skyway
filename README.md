@@ -76,6 +76,7 @@ use-skyway/
 import {
   SkyWayProvider,
   useLocalPersonCore,
+  useRemotePersonsCore,
   useRoomCore,
 } from "@use-skyway/react-hooks";
 
@@ -85,9 +86,13 @@ function CoreDemo() {
     joinOptions: { name: "alice" },
   });
   const { publish, unpublish } = useLocalPersonCore({ localMember });
+  const { remoteMembers, subscribe, unsubscribe } = useRemotePersonsCore({ room, localMember });
 
   // 例: publish(localVideoStream, { type: "p2p" })
   // 例: unpublish(publicationId)
+  // 例: subscribe(publication, options)
+  // 例: unsubscribe(subscription)
+  // remoteMembers からリモート参加者一覧を取得
 
   return null;
 }
