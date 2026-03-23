@@ -31,6 +31,18 @@ use-skyway/
 
 ## 主なフック
 
+## 設計方針（2層構造）
+
+このライブラリは以下の2層で API を提供します。
+
+- Compat 層（使いやすさ優先）: `useRoom`, `useLocalPerson` など。既存コードを壊さず利用可能。
+- Core 層（透過性優先）: `useRoomCore`, `useLocalPersonCore`。`@skyway-sdk/room` のオプションを可能な限りそのまま渡せます。
+
+推奨:
+
+- まずは Compat 層を使う
+- SDK の細かいオプション制御が必要になったら Core 層を使う
+
 ### `useRoom`
 
 ルームの参加・退出・接続状態を管理します。
@@ -50,9 +62,44 @@ use-skyway/
 
 - `useSkywayContext` — Provider で初期化した SkyWayContext を取得
 - `useLocalPerson` — ローカルの publish とマイク・カメラ制御（`publishVideo` / `publishAudio` は `PublicationOptions` を受け取り、`type` 指定可能）
+- `useRoomCore` — `FindOrCreate(roomInit)` / `join(joinOptions)` / `leave` / `close` / `dispose` を透過的に扱う
+- `useLocalPersonCore` — `publish` / `unpublish` / `subscribe` / `unsubscribe` を透過的に扱う
 - `useRemotePersons` — リモート参加者管理と subscribe 補助
 - `useMediaStream` — カメラ・マイク・画面共有ストリーム取得
 - `useWebRTCStats` — RTT・パケットロス・ビットレート取得
+
+## Core 層の最小例
+
+```tsx
+"use client";
+
+import {
+  SkyWayProvider,
+  useLocalPersonCore,
+  useRoomCore,
+} from "@use-skyway/react-hooks";
+
+function CoreDemo() {
+  const { room, localMember, join, leave, close, dispose } = useRoomCore({
+    roomInit: { name: "demo" }, // type 未指定 = default Room
+    joinOptions: { name: "alice" },
+  });
+  const { publish, unpublish } = useLocalPersonCore({ localMember });
+
+  // 例: publish(localVideoStream, { type: "p2p" })
+  // 例: unpublish(publicationId)
+
+  return null;
+}
+
+export default function App() {
+  return (
+    <SkyWayProvider token="YOUR_SKYWAY_TOKEN">
+      <CoreDemo />
+    </SkyWayProvider>
+  );
+}
+```
 
 ## 通信方式の指定方針
 
