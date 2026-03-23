@@ -211,6 +211,8 @@ cp apps/example-next-app/.env.local.example apps/example-next-app/.env.local
 
 ## パッケージの使い方
 
+### Compat 層（簡単に使う）
+
 ```tsx
 "use client";
 
@@ -247,6 +249,60 @@ export default function App() {
   return (
     <SkyWayProvider token="YOUR_SKYWAY_TOKEN">
       <Demo />
+    </SkyWayProvider>
+  );
+}
+```
+
+### Core 層（SDK オプションを厳密に制御する）
+
+```tsx
+"use client";
+
+import {
+  SkyWayProvider,
+  useLocalPersonCore,
+  useMediaStreamCore,
+  useRoomCore,
+} from "@use-skyway/react-hooks";
+
+function DemoCore() {
+  const { room, localMember, join, leave } = useRoomCore({
+    roomInit: { name: "demo-core" },
+    joinOptions: { name: "alice" },
+  });
+  const { publish } = useLocalPersonCore({ localMember });
+  const { requestCameraAndMicrophone } = useMediaStreamCore();
+
+  const handleJoin = async () => {
+    const { video, audio } = await requestCameraAndMicrophone({
+      video: { width: 1280, height: 720 },
+      audio: { echoCancellation: true },
+    });
+
+    await join();
+
+    if (video) {
+      await publish(video, { type: "p2p" });
+    }
+    if (audio) {
+      await publish(audio, { type: "p2p" });
+    }
+  };
+
+  return (
+    <div>
+      <button type="button" onClick={() => void handleJoin()}>Join</button>
+      <button type="button" onClick={() => void leave()}>Leave</button>
+      <p>{room ? "joined" : "not joined"}</p>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <SkyWayProvider token="YOUR_SKYWAY_TOKEN">
+      <DemoCore />
     </SkyWayProvider>
   );
 }
