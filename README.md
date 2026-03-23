@@ -46,6 +46,7 @@ use-skyway/
 
 | ユースケース | Compat 層 | Core 層 | 主な SDK 型 |
 |---|---|---|---|
+| 認証・初期化 | `SkyWayProvider` | `SkyWayProviderCore` | `SkyWayProviderProps`, `SkyWayProviderCoreProps` |
 | ルーム参加 | `useRoom` | `useRoomCore` | `RoomInit`, `RoomMemberInit` |
 | ローカル publish | `useLocalPerson` | `useLocalPersonCore` | `PublicationOptions`, `RoomPublicationOptions` |
 | リモート subscribe | `useRemotePersons` | `useRemotePersonsCore` | `SubscriptionOptions`, `RoomSubscription` |
@@ -56,6 +57,51 @@ use-skyway/
 
 - 既存実装の移行・簡易利用は Compat 層
 - SDK オプションを厳密に制御したい場合は Core 層
+
+### `SkyWayProvider` (Compat 層)
+
+SkyWay 認証コンテキストを初期化し、全体に提供するプロバイダーです。
+
+トークンの自動更新機能を持つため、簡単に利用できます：
+
+```tsx
+<SkyWayProvider token={myToken}>
+  <App />
+</SkyWayProvider>
+```
+
+**オプション：**
+
+| プロップ | 型 | 説明 |
+|---------|----|----|
+| `token` | `string \| (() => Promise<string>)` | トークン。関数の場合、期限切れ時に再呼び出し |
+| `config` | `SkyWayContextConfig` | SkyWayContext の設定（オプション） |
+| `onTokenExpired` | `() => void` | トークン期限切れ時のコールバック |
+| `onError` | `(error: Error) => void` | エラー発生時のコールバック |
+
+### `SkyWayProviderCore` (Core 層)
+
+手動トークン制御版のプロバイダーです。トークンの自動更新は行いません。
+
+```tsx
+const [token, setToken] = useState(myInitialToken);
+
+const handleTokenRefresh = (newToken: string) => {
+  setToken(newToken);  // Context が再初期化される
+};
+
+<SkyWayProviderCore token={token}>
+  <App onTokenRefresh={handleTokenRefresh} />
+</SkyWayProviderCore>
+```
+
+**オプション：**
+
+| プロップ | 型 | 説明 |
+|---------|----|----|
+| `token` | `string` | トークン（文字列のみ、自動更新なし） |
+| `config` | `SkyWayContextConfig` | SkyWayContext の設定（オプション） |
+| `onError` | `(error: Error) => void` | エラー発生時のコールバック |
 
 ### `useRoom`
 
@@ -91,15 +137,18 @@ use-skyway/
 "use client";
 
 import {
-  SkyWayProvider,
+  SkyWayProviderCore,
   useLocalPersonCore,
   useMediaStreamCore,
   useRemotePersonsCore,
   useRoomCore,
   useWebRTCStatsCore,
+  useSkywayContext,
 } from "@use-skyway/react-hooks";
+import { useState } from "react";
 
 function CoreDemo() {
+  const { skywayContext } = useSkywayContext();
   const { room, localMember, join, leave, close, dispose } = useRoomCore({
     roomInit: { name: "demo" }, // type 未指定 = default Room
     joinOptions: { name: "alice" },
@@ -107,7 +156,7 @@ function CoreDemo() {
   const { publish, unpublish } = useLocalPersonCore({ localMember });
   const { remoteMembers, subscribe, unsubscribe } = useRemotePersonsCore({ room, localMember });
   const { requestCameraAndMicrophone, requestDisplay } = useMediaStreamCore();
-  const { stats, collectNow } = useWebRTCStatsCore({ room, intervalMs: 3000 });
+  const { stats, collectNow } = useWebRTCStatsCore({ room, intervalMs: 3000, enabled: true });
 
   // 例: publish(localVideoStream, { type: "p2p" })
   // 例: unpublish(publicationId)
@@ -123,10 +172,16 @@ function CoreDemo() {
 }
 
 export default function App() {
+  const [token, setToken] = useState("YOUR_SKYWAY_TOKEN");
+
+  const handleTokenRefresh = (newToken: string) => {
+    setToken(newToken);
+  };
+
   return (
-    <SkyWayProvider token="YOUR_SKYWAY_TOKEN">
+    <SkyWayProviderCore token={token}>
       <CoreDemo />
-    </SkyWayProvider>
+    </SkyWayProviderCore>
   );
 }
 ```
@@ -306,11 +361,12 @@ export default function App() {
 "use client";
 
 import {
-  SkyWayProvider,
+  SkyWayProviderCore,
   useLocalPersonCore,
   useMediaStreamCore,
   useRoomCore,
 } from "@use-skyway/react-hooks";
+import { useState } from "react";
 
 function DemoCore() {
   const { room, localMember, join, leave } = useRoomCore({
@@ -346,10 +402,16 @@ function DemoCore() {
 }
 
 export default function App() {
+  const [token, setToken] = useState("YOUR_SKYWAY_TOKEN");
+
+  const handleTokenRefresh = (newToken: string) => {
+    setToken(newToken);
+  };
+
   return (
-    <SkyWayProvider token="YOUR_SKYWAY_TOKEN">
+    <SkyWayProviderCore token={token}>
       <DemoCore />
-    </SkyWayProvider>
+    </SkyWayProviderCore>
   );
 }
 ```
