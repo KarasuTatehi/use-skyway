@@ -9,6 +9,7 @@ import type {
 } from "@skyway-sdk/room";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import type { UseLocalPersonOptions, UseLocalPersonReturn } from "../types";
+import { useLocalPersonCore } from "./useLocalPersonCore";
 
 // ----------------------------------------------------------------
 // State / Reducer
@@ -45,6 +46,10 @@ type LocalPersonAction =
     }
   | {
       type: "AUDIO_UNPUBLISHED";
+      publications: RoomPublication[];
+    }
+  | {
+      type: "SYNC_PUBLICATIONS";
       publications: RoomPublication[];
     }
   | { type: "TOGGLE_VIDEO" }
@@ -97,6 +102,11 @@ function localPersonReducer(state: LocalPersonState, action: LocalPersonAction):
         publications: action.publications,
         isAudioPublishing: false,
       };
+    case "SYNC_PUBLICATIONS":
+      return {
+        ...state,
+        publications: action.publications,
+      };
     case "TOGGLE_VIDEO":
       return { ...state, isVideoEnabled: !state.isVideoEnabled };
     case "TOGGLE_AUDIO":
@@ -122,6 +132,11 @@ function localPersonReducer(state: LocalPersonState, action: LocalPersonAction):
  */
 export function useLocalPerson({ localMember }: UseLocalPersonOptions): UseLocalPersonReturn {
   const [state, dispatch] = useReducer(localPersonReducer, initialState);
+  const {
+    publish: publishCore,
+    unpublish: unpublishCore,
+    publications: corePublications,
+  } = useLocalPersonCore({ localMember });
 
   // ストリームの enable/disable は副作用として処理
   const prevVideoEnabledRef = useRef(state.isVideoEnabled);
@@ -150,10 +165,15 @@ export function useLocalPerson({ localMember }: UseLocalPersonOptions): UseLocal
     }
   }, [state.isAudioEnabled, state.audioStream]);
 
+  // publication 一覧は core hook と同期
+  useEffect(() => {
+    dispatch({ type: "SYNC_PUBLICATIONS", publications: corePublications });
+  }, [corePublications]);
+
   const publishVideo = useCallback(
     async (stream: LocalVideoStream, options?: PublicationOptions): Promise<void> => {
-      if (!localMember) return;
-      const publication = await localMember.publish(stream, options);
+      const publication = await publishCore<LocalVideoStream>(stream, options);
+      if (!publication || !localMember) return;
       dispatch({
         type: "VIDEO_PUBLISHED",
         stream,
@@ -161,13 +181,13 @@ export function useLocalPerson({ localMember }: UseLocalPersonOptions): UseLocal
         publications: localMember.publications,
       });
     },
-    [localMember]
+    [localMember, publishCore]
   );
 
   const publishAudio = useCallback(
     async (stream: LocalAudioStream, options?: PublicationOptions): Promise<void> => {
-      if (!localMember) return;
-      const publication = await localMember.publish(stream, options);
+      const publication = await publishCore<LocalAudioStream>(stream, options);
+      if (!publication || !localMember) return;
       dispatch({
         type: "AUDIO_PUBLISHED",
         stream,
@@ -175,28 +195,28 @@ export function useLocalPerson({ localMember }: UseLocalPersonOptions): UseLocal
         publications: localMember.publications,
       });
     },
-    [localMember]
+    [localMember, publishCore]
   );
 
   const unpublishVideo = useCallback(async (): Promise<void> => {
     if (!localMember || !state.videoPublicationId) return;
-    await localMember.unpublish(state.videoPublicationId);
+    await unpublishCore(state.videoPublicationId);
     state.videoStream?.release();
     dispatch({
       type: "VIDEO_UNPUBLISHED",
       publications: localMember.publications,
     });
-  }, [localMember, state.videoPublicationId, state.videoStream]);
+  }, [localMember, state.videoPublicationId, state.videoStream, unpublishCore]);
 
   const unpublishAudio = useCallback(async (): Promise<void> => {
     if (!localMember || !state.audioPublicationId) return;
-    await localMember.unpublish(state.audioPublicationId);
+    await unpublishCore(state.audioPublicationId);
     state.audioStream?.release();
     dispatch({
       type: "AUDIO_UNPUBLISHED",
       publications: localMember.publications,
     });
-  }, [localMember, state.audioPublicationId, state.audioStream]);
+  }, [localMember, state.audioPublicationId, state.audioStream, unpublishCore]);
 
   const toggleVideo = useCallback(() => {
     dispatch({ type: "TOGGLE_VIDEO" });
