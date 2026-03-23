@@ -29,14 +29,12 @@ use-skyway/
 └── package.json
 ```
 
-## 主なフック
-
 ## 設計方針（2層構造）
 
 このライブラリは以下の2層で API を提供します。
 
 - Compat 層（使いやすさ優先）: `useRoom`, `useLocalPerson` など。既存コードを壊さず利用可能。
-- Core 層（透過性優先）: `useRoomCore`, `useLocalPersonCore`。`@skyway-sdk/room` のオプションを可能な限りそのまま渡せます。
+- Core 層（透過性優先）: `useRoomCore`, `useLocalPersonCore`, `useRemotePersonsCore`, `useMediaStreamCore`, `useWebRTCStatsCore`。`@skyway-sdk/room` のオプションを可能な限りそのまま渡せます。
 
 推奨:
 
@@ -65,8 +63,11 @@ use-skyway/
 - `useRoomCore` — `FindOrCreate(roomInit)` / `join(joinOptions)` / `leave` / `close` / `dispose` を透過的に扱う
 - `useLocalPersonCore` — `publish` / `unpublish` / `subscribe` / `unsubscribe` を透過的に扱う
 - `useRemotePersons` — リモート参加者管理と subscribe 補助
+- `useRemotePersonsCore` — リモート参加者と subscribe/unsubscribe を透過的に扱う
 - `useMediaStream` — カメラ・マイク・画面共有ストリーム取得
+- `useMediaStreamCore` — `SkyWayStreamFactory` 呼び出しを透過的に扱う
 - `useWebRTCStats` — RTT・パケットロス・ビットレート取得
+- `useWebRTCStatsCore` — 統計収集の間隔・有効化・PeerConnection 取得方法を透過的に扱う
 
 ## Core 層の最小例
 
@@ -76,8 +77,10 @@ use-skyway/
 import {
   SkyWayProvider,
   useLocalPersonCore,
+  useMediaStreamCore,
   useRemotePersonsCore,
   useRoomCore,
+  useWebRTCStatsCore,
 } from "@use-skyway/react-hooks";
 
 function CoreDemo() {
@@ -87,12 +90,18 @@ function CoreDemo() {
   });
   const { publish, unpublish } = useLocalPersonCore({ localMember });
   const { remoteMembers, subscribe, unsubscribe } = useRemotePersonsCore({ room, localMember });
+  const { requestCameraAndMicrophone, requestDisplay } = useMediaStreamCore();
+  const { stats, collectNow } = useWebRTCStatsCore({ room, intervalMs: 3000 });
 
   // 例: publish(localVideoStream, { type: "p2p" })
   // 例: unpublish(publicationId)
   // 例: subscribe(publication, options)
   // 例: unsubscribe(subscription)
+  // 例: requestCameraAndMicrophone({ video, audio })
+  // 例: requestDisplay({ audio: false })
+  // 例: collectNow()
   // remoteMembers からリモート参加者一覧を取得
+  // stats から RTT / ロス率を取得
 
   return null;
 }
