@@ -86,8 +86,8 @@ export interface UseRoomOptions {
   /** join() に渡すオプション */
   joinOptions?: import("@skyway-sdk/room").RoomMemberInit;
   /**
-   * 自分が最後のメンバーとして退出した際に room.close() を呼ぶか（デフォルト: true）。
-   * false にするとルームを残したまま退出できます。
+   * 自分が最後のメンバーとして退出した際に room.close() を呼ぶか（デフォルト: false）。
+   * true にするとルーム内の最後のメンバーが退出時に自動的にルームが閉じられます。
    */
   closeOnEmpty?: boolean;
 }
@@ -215,7 +215,7 @@ export interface RemotePersonState {
 export interface UseRemotePersonsOptions {
   room: AnyRoom | null;
   localMember: import("@skyway-sdk/room").LocalRoomMember | null;
-  /** 自動的に全パブリケーションをサブスクライブするか（デフォルト: true）*/
+  /** 自動的に全パブリケーションをサブスクライブするか（デフォルト: false）。true にするとリモートメンバーのストリームを自動サブスクライブします。*/
   autoSubscribe?: boolean;
   /** 参加イベントのコールバック */
   onMemberJoined?: (member: import("@skyway-sdk/room").RemoteRoomMember) => void;
@@ -326,7 +326,7 @@ export interface WebRTCStats {
 export interface UseWebRTCStatsOptions {
   /** 計測間隔（ミリ秒、デフォルト: 5000ms）*/
   intervalMs?: number;
-  /** 計測を有効にするか（デフォルト: true）*/
+  /** 計測を有効にするか（デフォルト: false）。true にすると WebRTC 統計を定期的に自動収集します。*/
   enabled?: boolean;
 }
 
@@ -334,7 +334,7 @@ export interface UseWebRTCStatsCoreOptions {
   room: AnyRoom | null;
   /** 計測間隔（ミリ秒、デフォルト: 5000ms）*/
   intervalMs?: number;
-  /** 計測を有効にするか（デフォルト: true）*/
+  /** 計測を有効にするか（デフォルト: false）。true にすると WebRTC 統計を定期的に自動収集します。*/
   enabled?: boolean;
   /**
    * 統計収集対象の RTCPeerConnection 一覧を返す。

@@ -70,7 +70,7 @@ function defaultGetPeerConnections(): RTCPeerConnection[] {
 export function useWebRTCStatsCore({
   room,
   intervalMs = 5000,
-  enabled = true,
+  enabled = false,
   getPeerConnections = defaultGetPeerConnections,
 }: UseWebRTCStatsCoreOptions): UseWebRTCStatsCoreReturn {
   const [stats, setStats] = useState<WebRTCStats | null>(null);

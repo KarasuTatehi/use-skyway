@@ -208,7 +208,7 @@ function RoomInnerCompat({ roomName }: RoomInnerProps) {
     toggleAudio,
   } = useLocalPerson({ localMember });
 
-  const { remotePersons } = useRemotePersons({ room, localMember });
+  const { remotePersons } = useRemotePersons({ room, localMember, autoSubscribe: true });
 
   const {
     localVideoStream,
@@ -217,7 +217,7 @@ function RoomInnerCompat({ roomName }: RoomInnerProps) {
     isLoading: isMediaLoading,
   } = useMediaStream();
 
-  const { stats } = useWebRTCStats(room, localMember, { intervalMs: 5000 });
+  const { stats } = useWebRTCStats(room, localMember, { intervalMs: 5000, enabled: true });
 
   const handleJoin = useCallback(async () => {
     videoPublishRequestedRef.current = false;

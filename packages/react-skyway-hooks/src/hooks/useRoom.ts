@@ -25,7 +25,7 @@ export function useRoom({
   roomType,
   autoJoin = false,
   joinOptions,
-  closeOnEmpty = true,
+  closeOnEmpty = false,
 }: UseRoomOptions): UseRoomReturn {
   const isClosingRef = useRef(false);
 

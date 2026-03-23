@@ -57,7 +57,7 @@ function buildRemotePersonState(
 export function useRemotePersons({
   room,
   localMember,
-  autoSubscribe = true,
+  autoSubscribe = false,
   onMemberJoined,
   onMemberLeft,
 }: UseRemotePersonsOptions): UseRemotePersonsReturn {

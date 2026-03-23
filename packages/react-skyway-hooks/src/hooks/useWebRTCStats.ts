@@ -21,7 +21,7 @@ import { useWebRTCStatsCore } from "./useWebRTCStatsCore";
 export function useWebRTCStats(
   room: AnyRoom | null,
   _localMember: LocalRoomMember | null,
-  { intervalMs = 5000, enabled = true }: UseWebRTCStatsOptions = {}
+  { intervalMs = 5000, enabled = false }: UseWebRTCStatsOptions = {}
 ): UseWebRTCStatsReturn {
   const { stats, isCollecting } = useWebRTCStatsCore({
     room,
