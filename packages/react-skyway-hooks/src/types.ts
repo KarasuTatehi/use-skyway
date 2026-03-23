@@ -327,6 +327,25 @@ export interface UseWebRTCStatsOptions {
   enabled?: boolean;
 }
 
+export interface UseWebRTCStatsCoreOptions {
+  room: AnyRoom | null;
+  /** 計測間隔（ミリ秒、デフォルト: 5000ms）*/
+  intervalMs?: number;
+  /** 計測を有効にするか（デフォルト: true）*/
+  enabled?: boolean;
+  /**
+   * 統計収集対象の RTCPeerConnection 一覧を返す。
+   * 未指定時は window._skyway_pcs を参照します。
+   */
+  getPeerConnections?: () => RTCPeerConnection[];
+}
+
+export interface UseWebRTCStatsCoreReturn {
+  stats: WebRTCStats | null;
+  isCollecting: boolean;
+  collectNow(): Promise<void>;
+}
+
 export interface UseWebRTCStatsReturn {
   stats: WebRTCStats | null;
   isCollecting: boolean;
