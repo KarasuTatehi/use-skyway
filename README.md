@@ -42,6 +42,21 @@ use-skyway/
 - まずは Compat 層を使う
 - SDK の細かいオプション制御が必要になったら Core 層を使う
 
+### Compat/Core 型対応表
+
+| ユースケース | Compat 層 | Core 層 | 主な SDK 型 |
+|---|---|---|---|
+| ルーム参加 | `useRoom` | `useRoomCore` | `RoomInit`, `RoomMemberInit` |
+| ローカル publish | `useLocalPerson` | `useLocalPersonCore` | `PublicationOptions`, `RoomPublicationOptions` |
+| リモート subscribe | `useRemotePersons` | `useRemotePersonsCore` | `SubscriptionOptions`, `RoomSubscription` |
+| メディア取得 | `useMediaStream` | `useMediaStreamCore` | `VideoMediaTrackConstraints`, `AudioMediaTrackConstraints` |
+| 統計取得 | `useWebRTCStats` | `useWebRTCStatsCore` | `RTCStats`, `RTCIceCandidatePairStats` |
+
+目安:
+
+- 既存実装の移行・簡易利用は Compat 層
+- SDK オプションを厳密に制御したい場合は Core 層
+
 ### `useRoom`
 
 ルームの参加・退出・接続状態を管理します。
