@@ -10,6 +10,7 @@ SkyWay JS SDK を Next.js App Router で扱いやすくするための React カ
 ## 特徴
 
 - `@skyway-sdk/room` 同梱の TypeScript 型を利用
+- `RoomMemberInit` / `RoomPublicationOptions` / `SubscriptionOptions` など主要 SDK 型を再エクスポート
 - Next.js App Router で使える Client Component 前提のフック設計
 - `next/dynamic` + `ssr: false` による `RTCPeerConnection` SSR エラー回避パターン
 - React Compiler 有効化済みサンプル（手動 `memo` / `useCallback` 不要）

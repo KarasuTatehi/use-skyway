@@ -14,6 +14,8 @@ export type {
   LocalVideoStream,
   P2PRoom,
   PublicationOptions,
+  RoomMemberInit,
+  RoomPublicationOptions,
   Room,
   RemoteAudioStream,
   RemoteRoomMember,
@@ -24,6 +26,7 @@ export type {
   RoomType,
   SFURoom,
   Stream,
+  SubscriptionOptions,
 } from "@skyway-sdk/room";
 
 /** 後方互換: 既存API名を維持するための型エイリアス */
