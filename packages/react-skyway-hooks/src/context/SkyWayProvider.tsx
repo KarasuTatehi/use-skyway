@@ -8,8 +8,8 @@ import type { SkyWayContextValue, SkyWayProviderCoreProps, SkyWayProviderProps }
 // Context
 // ----------------------------------------------------------------
 
-const SkywayReactContext = createContext<SkyWayContextValue | null>(null);
-SkywayReactContext.displayName = "SkyWayContext";
+const SkyWayReactContext = createContext<SkyWayContextValue | null>(null);
+SkyWayReactContext.displayName = "SkyWayContext";
 
 // ----------------------------------------------------------------
 // Provider
@@ -31,7 +31,7 @@ export function SkyWayProvider({
   onTokenExpired,
   onError,
 }: SkyWayProviderProps) {
-  const [skywayContext, setSkywayContext] = useState<SkyWayContext | null>(null);
+  const [skyWayContext, setSkyWayContext] = useState<SkyWayContext | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -96,7 +96,7 @@ export function SkyWayProvider({
         });
 
         contextRef.current = ctx;
-        setSkywayContext(ctx);
+        setSkyWayContext(ctx);
       } catch (e) {
         if (!disposed) handleError(e);
       } finally {
@@ -110,14 +110,14 @@ export function SkyWayProvider({
       disposed = true;
       contextRef.current?.dispose();
       contextRef.current = null;
-      setSkywayContext(null);
+      setSkyWayContext(null);
     };
   }, []);
 
   return (
-    <SkywayReactContext.Provider value={{ skywayContext, isInitializing, error }}>
+    <SkyWayReactContext.Provider value={{ skyWayContext, isInitializing, error }}>
       {children}
-    </SkywayReactContext.Provider>
+    </SkyWayReactContext.Provider>
   );
 }
 
@@ -130,7 +130,7 @@ export function SkyWayProvider({
  *
  * Compat版（SkyWayProvider）と異なり、トークンの自動更新は行いません。
  * トークン変更時は明示的にプロップを更新し、Context 再作成を促すか、
- * 手動で `skywayContext.updateAuthToken(newToken)` を呼んでください。
+ * 手動で `skyWayContext.updateAuthToken(newToken)` を呼んでください。
  *
  * ```tsx
  * const [token, setToken] = useState(myInitialToken);
@@ -147,7 +147,7 @@ export function SkyWayProvider({
  * ```
  */
 export function SkyWayProviderCore({ token, children, config, onError }: SkyWayProviderCoreProps) {
-  const [skywayContext, setSkywayContext] = useState<SkyWayContext | null>(null);
+  const [skyWayContext, setSkyWayContext] = useState<SkyWayContext | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -183,7 +183,7 @@ export function SkyWayProviderCore({ token, children, config, onError }: SkyWayP
         // - または ctx.updateAuthToken(newToken) を直接呼び出し
 
         contextRef.current = ctx;
-        setSkywayContext(ctx);
+        setSkyWayContext(ctx);
       } catch (e) {
         if (!disposed) handleError(e);
       } finally {
@@ -197,26 +197,26 @@ export function SkyWayProviderCore({ token, children, config, onError }: SkyWayP
       disposed = true;
       contextRef.current?.dispose();
       contextRef.current = null;
-      setSkywayContext(null);
+      setSkyWayContext(null);
     };
   }, [token, config]);
 
   return (
-    <SkywayReactContext.Provider value={{ skywayContext, isInitializing, error }}>
+    <SkyWayReactContext.Provider value={{ skyWayContext, isInitializing, error }}>
       {children}
-    </SkywayReactContext.Provider>
+    </SkyWayReactContext.Provider>
   );
 }
 
 // ----------------------------------------------------------------
-// Raw Context export（useSkywayContext から利用）
+// Raw Context export（useSkyWayContext から利用）
 // ----------------------------------------------------------------
-export { SkywayReactContext };
+export { SkyWayReactContext };
 
 /**
  * SkyWay コンテキスト値を直接取得するフック（内部用）。
  * SkyWayProvider の外で呼ぶと null を返します。
  */
 export function useSkyWayContextRaw(): SkyWayContextValue | null {
-  return useContext(SkywayReactContext);
+  return useContext(SkyWayReactContext);
 }

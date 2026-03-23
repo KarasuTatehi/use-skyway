@@ -80,7 +80,7 @@ export interface SkyWayProviderCoreProps {
 /** SkyWayProvider が提供するコンテキスト値 */
 export interface SkyWayContextValue {
   /** SkyWayContext インスタンス（初期化前は null）*/
-  skywayContext: import("@skyway-sdk/room").SkyWayContext | null;
+  skyWayContext: import("@skyway-sdk/room").SkyWayContext | null;
   /** 初期化中フラグ */
   isInitializing: boolean;
   /** 初期化エラー */

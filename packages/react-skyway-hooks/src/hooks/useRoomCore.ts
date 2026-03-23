@@ -3,7 +3,7 @@
 import { type LocalRoomMember, SkyWayRoom } from "@skyway-sdk/room";
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import type { AnyRoom, UseRoomCoreOptions, UseRoomCoreReturn } from "../types";
-import { useSkywayContext } from "./useSkywayContext";
+import { useSkyWayContext } from "./useSkyWayContext";
 
 interface RoomCoreState {
   room: AnyRoom | null;
@@ -70,7 +70,7 @@ export function useRoomCore({
   autoJoin = false,
   joinOptions,
 }: UseRoomCoreOptions): UseRoomCoreReturn {
-  const { skywayContext } = useSkywayContext();
+  const { skyWayContext } = useSkyWayContext();
   const [state, dispatch] = useReducer(roomCoreReducer, initialState);
 
   const roomRef = useRef<AnyRoom | null>(null);
@@ -85,12 +85,12 @@ export function useRoomCore({
 
   const join = useCallback(
     async (overrideOptions?: import("@skyway-sdk/room").RoomMemberInit) => {
-      if (!skywayContext || isJoiningRef.current || isJoinedRef.current) return;
+      if (!skyWayContext || isJoiningRef.current || isJoinedRef.current) return;
 
       isJoiningRef.current = true;
       dispatch({ type: "CONNECTING" });
       try {
-        const room = await SkyWayRoom.FindOrCreate(skywayContext, roomInitRef.current);
+        const room = await SkyWayRoom.FindOrCreate(skyWayContext, roomInitRef.current);
         roomRef.current = room;
 
         const opts = overrideOptions ?? joinOptionsRef.current;
@@ -108,7 +108,7 @@ export function useRoomCore({
         });
       }
     },
-    [skywayContext]
+    [skyWayContext]
   );
 
   const leave = useCallback(async () => {
@@ -143,10 +143,10 @@ export function useRoomCore({
   }, []);
 
   useEffect(() => {
-    if (autoJoin && skywayContext) {
+    if (autoJoin && skyWayContext) {
       void join();
     }
-  }, [autoJoin, skywayContext, join]);
+  }, [autoJoin, skyWayContext, join]);
 
   useEffect(() => {
     return () => {

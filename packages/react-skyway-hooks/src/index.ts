@@ -9,7 +9,10 @@
 export { SkyWayProvider, SkyWayProviderCore } from "./context/SkyWayProvider";
 
 // Hooks
-export { useSkywayContext } from "./hooks/useSkywayContext";
+export {
+  useSkyWayContext,
+  useSkyWayContextCore,
+} from "./hooks/useSkyWayContext";
 export { useRoomCore } from "./hooks/useRoomCore";
 export { useRoom } from "./hooks/useRoom";
 export { useLocalPersonCore } from "./hooks/useLocalPersonCore";

@@ -120,7 +120,8 @@ const handleTokenRefresh = (newToken: string) => {
 
 ### その他のフック
 
-- `useSkywayContext` — Provider で初期化した SkyWayContext を取得
+- `useSkyWayContext` — Provider で初期化した SkyWayContext を取得
+- `useSkyWayContextCore` — Provider で初期化した SkyWayContext を取得（Provider 外では例外ではなく `null` を返す）
 - `useLocalPerson` — ローカルの publish とマイク・カメラ制御（`publishVideo` / `publishAudio` は `PublicationOptions` を受け取り、`type` 指定可能）
 - `useRoomCore` — `FindOrCreate(roomInit)` / `join(joinOptions)` / `leave` / `close` / `dispose` を透過的に扱う
 - `useLocalPersonCore` — `publish` / `unpublish` / `subscribe` / `unsubscribe` を透過的に扱う
@@ -142,13 +143,14 @@ import {
   useMediaStreamCore,
   useRemotePersonsCore,
   useRoomCore,
+  useSkyWayContextCore,
   useWebRTCStatsCore,
-  useSkywayContext,
 } from "@use-skyway/react-hooks";
 import { useState } from "react";
 
 function CoreDemo() {
-  const { skywayContext } = useSkywayContext();
+  const contextValue = useSkyWayContextCore();
+  const skyWayContext = contextValue?.skyWayContext ?? null;
   const { room, localMember, join, leave, close, dispose } = useRoomCore({
     roomInit: { name: "demo" }, // type 未指定 = default Room
     joinOptions: { name: "alice" },
@@ -167,6 +169,7 @@ function CoreDemo() {
   // 例: collectNow()
   // remoteMembers からリモート参加者一覧を取得
   // stats から RTT / ロス率を取得
+  // skyWayContext から SDK のイベントを手動購読可能
 
   return null;
 }

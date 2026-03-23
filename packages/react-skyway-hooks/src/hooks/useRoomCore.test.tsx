@@ -2,8 +2,8 @@ import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useRoomCore } from "./useRoomCore";
 
-const { mockUseSkywayContext, findOrCreateMock } = vi.hoisted(() => ({
-  mockUseSkywayContext: vi.fn(),
+const { mockUseSkyWayContext, findOrCreateMock } = vi.hoisted(() => ({
+  mockUseSkyWayContext: vi.fn(),
   findOrCreateMock: vi.fn(),
 }));
 
@@ -13,14 +13,14 @@ vi.mock("@skyway-sdk/room", () => ({
   },
 }));
 
-vi.mock("./useSkywayContext", () => ({
-  useSkywayContext: () => mockUseSkywayContext(),
+vi.mock("./useSkyWayContext", () => ({
+  useSkyWayContext: () => mockUseSkyWayContext(),
 }));
 
 describe("useRoomCore transparency", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseSkywayContext.mockReturnValue({ skywayContext: { id: "ctx" } });
+    mockUseSkyWayContext.mockReturnValue({ skyWayContext: { id: "ctx" } });
   });
 
   it("forwards roomInit and joinOptions to SDK APIs", async () => {
