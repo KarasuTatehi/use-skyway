@@ -128,6 +128,34 @@ export interface UseLocalPersonOptions {
   localMember: import("@skyway-sdk/room").LocalRoomMember | null;
 }
 
+export interface UseLocalPersonCoreOptions {
+  localMember: import("@skyway-sdk/room").LocalRoomMember | null;
+}
+
+export interface UseLocalPersonCoreReturn {
+  localMember: import("@skyway-sdk/room").LocalRoomMember | null;
+  publications: import("@skyway-sdk/room").RoomPublication[];
+  isProcessing: boolean;
+  error: Error | null;
+  publish<
+    T extends import("@skyway-sdk/room").LocalStream = import("@skyway-sdk/room").LocalStream,
+  >(
+    stream: T,
+    options?: import("@skyway-sdk/room").RoomPublicationOptions
+  ): Promise<import("@skyway-sdk/room").RoomPublication<T> | null>;
+  unpublish(target: string | import("@skyway-sdk/room").RoomPublication): Promise<void>;
+  subscribe<
+    T extends
+      | import("@skyway-sdk/room").RemoteVideoStream
+      | import("@skyway-sdk/room").RemoteAudioStream
+      | import("@skyway-sdk/room").RemoteDataStream,
+  >(
+    target: string | import("@skyway-sdk/room").RoomPublication,
+    options?: import("@skyway-sdk/room").SubscriptionOptions
+  ): Promise<{ subscription: import("@skyway-sdk/room").RoomSubscription<T>; stream: T } | null>;
+  unsubscribe(target: string | import("@skyway-sdk/room").RoomSubscription): Promise<void>;
+}
+
 export interface UseLocalPersonReturn {
   /** 発行中のビデオストリーム */
   videoStream: import("@skyway-sdk/room").LocalVideoStream | null;
