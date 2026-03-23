@@ -226,6 +226,25 @@ export interface UseRemotePersonsReturn {
   unsubscribe(subscriptionId: string): Promise<void>;
 }
 
+export interface UseRemotePersonsCoreOptions {
+  room: AnyRoom | null;
+  localMember: import("@skyway-sdk/room").LocalRoomMember | null;
+  onMemberJoined?: (member: import("@skyway-sdk/room").RemoteRoomMember) => void;
+  onMemberLeft?: (member: import("@skyway-sdk/room").RemoteRoomMember) => void;
+}
+
+export interface UseRemotePersonsCoreReturn {
+  remoteMembers: import("@skyway-sdk/room").RemoteRoomMember[];
+  subscriptions: import("@skyway-sdk/room").RoomSubscription[];
+  isProcessing: boolean;
+  error: Error | null;
+  subscribe(
+    publication: import("@skyway-sdk/room").RoomPublication,
+    options?: import("@skyway-sdk/room").SubscriptionOptions
+  ): Promise<import("@skyway-sdk/room").RoomSubscription | null>;
+  unsubscribe(target: string | import("@skyway-sdk/room").RoomSubscription): Promise<void>;
+}
+
 // ----------------------------------------------------------------
 // useMediaStream
 // ----------------------------------------------------------------

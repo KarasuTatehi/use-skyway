@@ -14,6 +14,7 @@ export { useRoomCore } from "./hooks/useRoomCore";
 export { useRoom } from "./hooks/useRoom";
 export { useLocalPersonCore } from "./hooks/useLocalPersonCore";
 export { useLocalPerson } from "./hooks/useLocalPerson";
+export { useRemotePersonsCore } from "./hooks/useRemotePersonsCore";
 export { useRemotePersons } from "./hooks/useRemotePersons";
 export { useMediaStream } from "./hooks/useMediaStream";
 export { useWebRTCStats } from "./hooks/useWebRTCStats";
@@ -33,6 +34,8 @@ export type {
   UseLocalPersonOptions,
   UseLocalPersonReturn,
   RemotePersonState,
+  UseRemotePersonsCoreOptions,
+  UseRemotePersonsCoreReturn,
   UseRemotePersonsOptions,
   UseRemotePersonsReturn,
   UseMediaStreamOptions,
