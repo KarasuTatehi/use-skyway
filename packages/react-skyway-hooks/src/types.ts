@@ -260,6 +260,29 @@ export interface UseMediaStreamOptions {
   audioConstraints?: AudioConstraints | boolean;
 }
 
+export type UseMediaStreamCoreOptions = Record<string, never>;
+
+export interface UseMediaStreamCoreReturn {
+  localVideoStream: import("@skyway-sdk/room").LocalVideoStream | null;
+  localAudioStream: import("@skyway-sdk/room").LocalAudioStream | null;
+  isLoading: boolean;
+  error: Error | null;
+  /** SkyWayStreamFactory.createMicrophoneAudioAndCameraStream を透過的に呼び出す */
+  requestCameraAndMicrophone(options?: {
+    video?: import("@skyway-sdk/room").VideoMediaTrackConstraints;
+    audio?: import("@skyway-sdk/room").AudioMediaTrackConstraints;
+  }): Promise<{
+    video: import("@skyway-sdk/room").LocalVideoStream | null;
+    audio: import("@skyway-sdk/room").LocalAudioStream | null;
+  }>;
+  /** SkyWayStreamFactory.createDisplayStreams を透過的に呼び出す */
+  requestDisplay(
+    options?: import("@skyway-sdk/room").DisplayStreamOptions
+  ): Promise<import("@skyway-sdk/room").LocalVideoStream | null>;
+  /** 取得済みのカメラ・マイクストリームを解放 */
+  stopMediaStream(): void;
+}
+
 export interface UseMediaStreamReturn {
   localVideoStream: import("@skyway-sdk/room").LocalVideoStream | null;
   localAudioStream: import("@skyway-sdk/room").LocalAudioStream | null;

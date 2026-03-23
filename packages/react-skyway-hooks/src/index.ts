@@ -16,6 +16,7 @@ export { useLocalPersonCore } from "./hooks/useLocalPersonCore";
 export { useLocalPerson } from "./hooks/useLocalPerson";
 export { useRemotePersonsCore } from "./hooks/useRemotePersonsCore";
 export { useRemotePersons } from "./hooks/useRemotePersons";
+export { useMediaStreamCore } from "./hooks/useMediaStreamCore";
 export { useMediaStream } from "./hooks/useMediaStream";
 export { useWebRTCStats } from "./hooks/useWebRTCStats";
 
@@ -38,6 +39,8 @@ export type {
   UseRemotePersonsCoreReturn,
   UseRemotePersonsOptions,
   UseRemotePersonsReturn,
+  UseMediaStreamCoreOptions,
+  UseMediaStreamCoreReturn,
   UseMediaStreamOptions,
   UseMediaStreamReturn,
   UseWebRTCStatsOptions,
