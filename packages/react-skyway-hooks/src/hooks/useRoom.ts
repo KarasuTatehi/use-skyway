@@ -1,5 +1,6 @@
 "use client";
 
+import type { RoomMemberInit } from "@skyway-sdk/room";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import type { UseRoomOptions, UseRoomReturn } from "../types";
 import { useRoomCore } from "./useRoomCore";
@@ -47,7 +48,7 @@ export function useRoom({
   } = useRoomCore({ roomInit, autoJoin, joinOptions });
 
   const join = useCallback(
-    async (overrideOptions?: { name?: string; metadata?: string }) => {
+    async (overrideOptions?: RoomMemberInit) => {
       await joinCore(overrideOptions);
     },
     [joinCore]

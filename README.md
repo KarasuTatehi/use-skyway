@@ -53,7 +53,7 @@ use-skyway/
 | `roomName` | `string` | 必須 | ルーム名 |
 | `roomType` | `"default" \| "p2p" \| "sfu"` | `"default"` | ルームタイプ（未指定時は default Room） |
 | `autoJoin` | `boolean` | `false` | マウント時に自動参加 |
-| `joinOptions` | `{ name?: string; metadata?: string }` | — | `join()` に渡す追加オプション |
+| `joinOptions` | `RoomMemberInit` | — | `join()` に渡す追加オプション |
 | `closeOnEmpty` | `boolean` | `true` | 最後のメンバーが退出したとき `room.close()` を呼ぶか |
 
 ### その他のフック

@@ -81,7 +81,7 @@ export interface UseRoomOptions {
   /** マウント時に自動的にルームに参加するか（デフォルト: false）*/
   autoJoin?: boolean;
   /** join() に渡すオプション */
-  joinOptions?: { name?: string; metadata?: string };
+  joinOptions?: import("@skyway-sdk/room").RoomMemberInit;
   /**
    * 自分が最後のメンバーとして退出した際に room.close() を呼ぶか（デフォルト: true）。
    * false にするとルームを残したまま退出できます。
@@ -95,7 +95,7 @@ export interface UseRoomReturn {
   isConnecting: boolean;
   isConnected: boolean;
   error: Error | null;
-  join(options?: { name?: string; metadata?: string }): Promise<void>;
+  join(options?: import("@skyway-sdk/room").RoomMemberInit): Promise<void>;
   leave(): Promise<void>;
 }
 
