@@ -70,7 +70,7 @@ use-skyway/
 | `roomType` | `"default" \| "p2p" \| "sfu"` | `"default"` | ルームタイプ（未指定時は default Room） |
 | `autoJoin` | `boolean` | `false` | マウント時に自動参加 |
 | `joinOptions` | `RoomMemberInit` | — | `join()` に渡す追加オプション |
-| `closeOnEmpty` | `boolean` | `true` | 最後のメンバーが退出したとき `room.close()` を呼ぶか |
+| `closeOnEmpty` | `boolean` | `false` | 最後のメンバーが退出したとき `room.close()` を呼ぶか（`true` で有効化） |
 
 ### その他のフック
 
@@ -78,11 +78,11 @@ use-skyway/
 - `useLocalPerson` — ローカルの publish とマイク・カメラ制御（`publishVideo` / `publishAudio` は `PublicationOptions` を受け取り、`type` 指定可能）
 - `useRoomCore` — `FindOrCreate(roomInit)` / `join(joinOptions)` / `leave` / `close` / `dispose` を透過的に扱う
 - `useLocalPersonCore` — `publish` / `unpublish` / `subscribe` / `unsubscribe` を透過的に扱う
-- `useRemotePersons` — リモート参加者管理と subscribe 補助
-- `useRemotePersonsCore` — リモート参加者と subscribe/unsubscribe を透過的に扱う
+- `useRemotePersons` — リモート参加者管理と subscribe 補助（デフォルト `autoSubscribe: false`、明示的に `true` で全パブリケーションを自動 subscribe）
+- `useRemotePersonsCore` — リモート参加者と subscribe/unsubscribe を透過的に扱う（手動での subscribe/unsubscribe が必須）
 - `useMediaStream` — カメラ・マイク・画面共有ストリーム取得
 - `useMediaStreamCore` — `SkyWayStreamFactory` 呼び出しを透過的に扱う
-- `useWebRTCStats` — RTT・パケットロス・ビットレート取得
+- `useWebRTCStats` — RTT・パケットロス・ビットレート取得（デフォルト `enabled: false`、明示的に `true` で自動収集）
 - `useWebRTCStatsCore` — 統計収集の間隔・有効化・PeerConnection 取得方法を透過的に扱う
 
 ## Core 層の最小例
@@ -138,6 +138,52 @@ export default function App() {
 - サンプルアプリ: `publishVideo(stream, { type: "p2p" })` / `publishAudio(stream, { type: "p2p" })`
 
 将来的にサーバー側ポリシーで方式を決める場合でも、クライアントは `publish` オプションを差し替えるだけで対応できます。
+
+## 自動挙動から手動制御への移行ガイド
+
+v1.x では全てのフックのデフォルトを手動制御に変更しました。以前の自動挙動を維持したい場合は、明示的にオプトインしてください。
+
+### 変更内容
+
+| フック | オプション | 以前のデフォルト | 新しいデフォルト | 以前の動作を維持するには |
+|---|---|---|---|---|
+| `useRoom` | `closeOnEmpty` | `true` | `false` | `closeOnEmpty: true` を明示 |
+| `useRemotePersons` | `autoSubscribe` | `true` | `false` | `autoSubscribe: true` を明示 |
+| `useWebRTCStats` | `enabled` | `true` | `false` | `enabled: true` を明示 |
+
+### 移行例
+
+**Compat 層:**
+
+```tsx
+// ❌ 以前（自動で subscribe・統計収集）
+const { remotePersons } = useRemotePersons({ room, localMember });
+const { stats } = useWebRTCStats(room, localMember, { intervalMs: 5000 });
+
+// ✅ 新しい（手動制御、必要に応じてオプトイン）
+const { remotePersons } = useRemotePersons({ room, localMember, autoSubscribe: true });
+const { stats } = useWebRTCStats(room, localMember, { intervalMs: 5000, enabled: true });
+```
+
+**Core 層:**
+
+```tsx
+// Core 層は元々手動制御が前提です
+const { remoteMembers, subscribe, unsubscribe } = useRemotePersonsCore({ room, localMember });
+const { stats } = useWebRTCStatsCore({ room, enabled: true, intervalMs: 5000 });
+
+// 手動で subscribe が必要
+remoteMembers.forEach(member => {
+  member.publications.forEach(pub => {
+    if (pub.contentType !== "data") void subscribe(pub);
+  });
+});
+```
+
+### 推奨
+
+- **新規実装**: デフォルト（手動制御）のまま使う。必要なときだけオプトイン
+- **既存コード**: 以前の自動動作が必要な場合のみ、上記のように明示的にオプションを指定
 
 ## セットアップ
 
