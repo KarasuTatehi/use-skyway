@@ -99,6 +99,27 @@ export interface UseRoomReturn {
   leave(): Promise<void>;
 }
 
+export interface UseRoomCoreOptions {
+  /** SkyWayRoom.FindOrCreate に渡す初期化オプション（透過） */
+  roomInit: import("@skyway-sdk/room").RoomInit;
+  /** マウント時に自動で join() を呼ぶか */
+  autoJoin?: boolean;
+  /** join() に渡すオプション（透過） */
+  joinOptions?: import("@skyway-sdk/room").RoomMemberInit;
+}
+
+export interface UseRoomCoreReturn {
+  room: AnyRoom | null;
+  localMember: import("@skyway-sdk/room").LocalRoomMember | null;
+  isConnecting: boolean;
+  isConnected: boolean;
+  error: Error | null;
+  join(options?: import("@skyway-sdk/room").RoomMemberInit): Promise<void>;
+  leave(): Promise<void>;
+  close(): Promise<void>;
+  dispose(): Promise<void>;
+}
+
 // ----------------------------------------------------------------
 // useLocalPerson
 // ----------------------------------------------------------------

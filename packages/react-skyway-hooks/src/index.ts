@@ -10,6 +10,7 @@ export { SkyWayProvider } from "./context/SkyWayProvider";
 
 // Hooks
 export { useSkywayContext } from "./hooks/useSkywayContext";
+export { useRoomCore } from "./hooks/useRoomCore";
 export { useRoom } from "./hooks/useRoom";
 export { useLocalPerson } from "./hooks/useLocalPerson";
 export { useRemotePersons } from "./hooks/useRemotePersons";
@@ -24,6 +25,8 @@ export type {
   // Hooks
   UseRoomOptions,
   UseRoomReturn,
+  UseRoomCoreOptions,
+  UseRoomCoreReturn,
   UseLocalPersonOptions,
   UseLocalPersonReturn,
   RemotePersonState,
