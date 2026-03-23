@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 interface RoomPageClientLoaderProps {
   roomName: string;
   initialToken: string;
+  mode: "compat" | "core";
 }
 
 const DynamicRoomPageClient = dynamic(
@@ -27,6 +28,6 @@ const DynamicRoomPageClient = dynamic(
   }
 );
 
-export function RoomPageClientLoader({ roomName, initialToken }: RoomPageClientLoaderProps) {
-  return <DynamicRoomPageClient roomName={roomName} initialToken={initialToken} />;
+export function RoomPageClientLoader({ roomName, initialToken, mode }: RoomPageClientLoaderProps) {
+  return <DynamicRoomPageClient roomName={roomName} initialToken={initialToken} mode={mode} />;
 }

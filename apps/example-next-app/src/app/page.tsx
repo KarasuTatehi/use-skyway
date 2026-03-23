@@ -30,6 +30,10 @@ export default function HomePage() {
             maxLength={64}
             className={styles.input}
           />
+          <select name="mode" defaultValue="compat" className={styles.select}>
+            <option value="compat">Compat</option>
+            <option value="core">Core</option>
+          </select>
           <button type="submit" className={styles.primaryButton}>
             参加する
           </button>

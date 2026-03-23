@@ -4,6 +4,7 @@ import { RoomPageClientLoader } from "./RoomPageClientLoader";
 
 interface Props {
   params: Promise<{ roomName: string }>;
+  searchParams: Promise<{ mode?: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -19,9 +20,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
  * ルーム名を受け取り、トークン取得 API を呼んで
  * クライアントコンポーネントへ渡す。
  */
-export default async function RoomPage({ params }: Props) {
+export default async function RoomPage({ params, searchParams }: Props) {
   const { roomName: encodedName } = await params;
+  const { mode } = await searchParams;
   const roomName = decodeURIComponent(encodedName);
+  const roomMode = mode === "core" ? "core" : "compat";
 
   if (!roomName || roomName.trim() === "") {
     redirect("/");
@@ -52,5 +55,5 @@ export default async function RoomPage({ params }: Props) {
 
   const { token } = (await res.json()) as { token: string };
 
-  return <RoomPageClientLoader roomName={roomName} initialToken={token} />;
+  return <RoomPageClientLoader roomName={roomName} initialToken={token} mode={roomMode} />;
 }

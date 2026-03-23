@@ -71,6 +71,14 @@
   min-width: 0;
 }
 
+.select {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+  padding: 0.5rem 0.625rem;
+}
+
 .primaryButton {
   background: var(--color-primary);
   color: #fff;

@@ -27,6 +27,15 @@
   font-weight: 700;
 }
 
+.modeBadge {
+  font-size: 0.75rem;
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  color: var(--color-primary-hover);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  border-radius: 999px;
+  padding: 0.2rem 0.625rem;
+}
+
 .connectedBadge {
   font-size: 0.75rem;
   background: color-mix(in srgb, var(--color-success) 15%, transparent);
