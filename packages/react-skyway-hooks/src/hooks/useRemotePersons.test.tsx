@@ -72,4 +72,67 @@ describe("useRemotePersons compatibility", () => {
 
     expect(subscribeCore).not.toHaveBeenCalled();
   });
+
+  it("does not auto subscribe by default", async () => {
+    const subscribeCore = vi.fn().mockResolvedValue({ id: "sub-auto-default" });
+    const room = { id: "room-3" };
+    const localMember = { id: "local-3" };
+
+    useRemotePersonsCoreMock.mockReturnValue({
+      remoteMembers: [
+        {
+          id: "remote-1",
+          publications: [{ id: "pub-video-1", contentType: "video" }],
+        },
+      ],
+      subscriptions: [],
+      isProcessing: false,
+      error: null,
+      subscribe: subscribeCore,
+      unsubscribe: vi.fn().mockResolvedValue(undefined),
+    });
+
+    renderHook(() =>
+      useRemotePersons({
+        room: room as never,
+        localMember: localMember as never,
+      })
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(subscribeCore).not.toHaveBeenCalled();
+  });
+
+  it("auto subscribes when autoSubscribe is true", async () => {
+    const subscribeCore = vi.fn().mockResolvedValue({ id: "sub-auto-true" });
+    const room = { id: "room-4" };
+    const localMember = { id: "local-4" };
+    const publication = { id: "pub-video-2", contentType: "video" };
+
+    useRemotePersonsCoreMock.mockReturnValue({
+      remoteMembers: [{ id: "remote-2", publications: [publication] }],
+      subscriptions: [],
+      isProcessing: false,
+      error: null,
+      subscribe: subscribeCore,
+      unsubscribe: vi.fn().mockResolvedValue(undefined),
+    });
+
+    renderHook(() =>
+      useRemotePersons({
+        room: room as never,
+        localMember: localMember as never,
+        autoSubscribe: true,
+      })
+    );
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(subscribeCore).toHaveBeenCalledWith(publication);
+  });
 });

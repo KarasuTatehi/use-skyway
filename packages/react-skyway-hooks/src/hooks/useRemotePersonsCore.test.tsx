@@ -81,4 +81,47 @@ describe("useRemotePersonsCore transparency", () => {
 
     expect(localMember.unsubscribe).toHaveBeenCalledWith("sub-2");
   });
+
+  it("removes publication listeners safely on cleanup", () => {
+    const removeListenerSpy = vi.fn();
+    const listener = {
+      removed: false,
+      removeListener() {
+        this.removed = true;
+        removeListenerSpy();
+      },
+    };
+
+    const localMember = {
+      subscribe: vi.fn().mockResolvedValue({ subscription: { id: "sub-3" } }),
+      unsubscribe: vi.fn().mockResolvedValue(undefined),
+    };
+
+    const remoteMember = {
+      id: "remote-3",
+      side: "remote",
+      publications: [],
+      onPublicationListChanged: {
+        add: vi.fn().mockReturnValue(listener),
+      },
+    };
+
+    const room = {
+      members: [remoteMember],
+      onMemberJoined: createEvent(),
+      onMemberLeft: createEvent(),
+    };
+
+    const { unmount } = renderHook(() =>
+      useRemotePersonsCore({
+        room: room as never,
+        localMember: localMember as never,
+      })
+    );
+
+    unmount();
+
+    expect(removeListenerSpy).toHaveBeenCalledTimes(1);
+    expect(listener.removed).toBe(true);
+  });
 });

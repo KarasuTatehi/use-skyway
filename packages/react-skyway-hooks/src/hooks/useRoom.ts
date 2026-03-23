@@ -47,6 +47,18 @@ export function useRoom({
     dispose,
   } = useRoomCore({ roomInit, autoJoin, joinOptions });
 
+  const roomRef = useRef<import("../types").AnyRoom | null>(null);
+  const localMemberRef = useRef<import("@skyway-sdk/room").LocalRoomMember | null>(null);
+  const closeOnEmptyRef = useRef(closeOnEmpty);
+  const closeRef = useRef(close);
+  const disposeRef = useRef(dispose);
+
+  roomRef.current = room;
+  localMemberRef.current = localMember;
+  closeOnEmptyRef.current = closeOnEmpty;
+  closeRef.current = close;
+  disposeRef.current = dispose;
+
   const join = useCallback(
     async (overrideOptions?: RoomMemberInit) => {
       await joinCore(overrideOptions);
@@ -113,28 +125,32 @@ export function useRoom({
   // アンマウント時にリソースを解放
   useEffect(() => {
     return () => {
+      const latestRoom = roomRef.current;
+      const latestLocalMember = localMemberRef.current;
+
       // leave() 前に判定（同期）
       const shouldClose =
-        closeOnEmpty &&
-        room != null &&
-        localMember != null &&
-        room.members.length <= 1 &&
-        room.members.some((member) => member.id === localMember.id);
+        closeOnEmptyRef.current &&
+        latestRoom != null &&
+        latestLocalMember != null &&
+        latestRoom.members.length <= 1 &&
+        latestRoom.members.some((member) => member.id === latestLocalMember.id);
 
       // 非同期クリーンアップを正しくチェーン
       void (async () => {
         if (shouldClose && !isClosingRef.current) {
           isClosingRef.current = true;
-          await close()
+          await closeRef
+            .current()
             .catch(console.error)
             .finally(() => {
               isClosingRef.current = false;
             });
         }
-        await dispose().catch(console.error);
+        await disposeRef.current().catch(console.error);
       })();
     };
-  }, [closeOnEmpty, room, localMember, close, dispose]);
+  }, []);
 
   return {
     room,

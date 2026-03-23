@@ -49,7 +49,7 @@ export function useRemotePersonsCore({
         membersRef.current.set(member.id, member);
         syncStates();
       });
-      publicationListenerDisposersRef.current.set(member.id, listener.removeListener);
+      publicationListenerDisposersRef.current.set(member.id, () => listener.removeListener());
     },
     [syncStates]
   );

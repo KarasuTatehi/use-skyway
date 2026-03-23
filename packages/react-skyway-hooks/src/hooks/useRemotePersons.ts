@@ -47,7 +47,7 @@ function buildRemotePersonState(
 /**
  * リモート参加者の入退室とストリーム購読を管理するフック。
  *
- * `autoSubscribe: true`（デフォルト）の場合、
+ * `autoSubscribe: true` を指定した場合、
  * リモートメンバーが公開したすべてのストリームを自動的にサブスクライブします。
  *
  * ```tsx
