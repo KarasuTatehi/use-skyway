@@ -6,7 +6,7 @@
  */
 
 // Provider
-export { SkyWayProvider } from "./context/SkyWayProvider";
+export { SkyWayProvider, SkyWayProviderCore } from "./context/SkyWayProvider";
 
 // Hooks
 export { useSkywayContext } from "./hooks/useSkywayContext";
@@ -25,6 +25,7 @@ export { useWebRTCStats } from "./hooks/useWebRTCStats";
 export type {
   // Provider
   SkyWayProviderProps,
+  SkyWayProviderCoreProps,
   SkyWayContextValue,
   // Hooks
   UseRoomOptions,

@@ -1,1 +1,1 @@
-export { SkyWayProvider, useSkyWayContextRaw } from "./SkyWayProvider";
+export { SkyWayProvider, SkyWayProviderCore, useSkyWayContextRaw } from "./SkyWayProvider";

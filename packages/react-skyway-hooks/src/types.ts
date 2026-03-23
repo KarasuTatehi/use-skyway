@@ -62,6 +62,21 @@ export interface SkyWayProviderProps {
   onError?: (error: Error) => void;
 }
 
+/** SkyWayProviderCore に渡す props（手動トークン制御） */
+export interface SkyWayProviderCoreProps {
+  /**
+   * SkyWay 認証トークン。
+   * 文字列として直接渡します。自動更新は行いません。
+   * トークン更新時は明示的にプロップを変更してください。
+   */
+  token: string;
+  children: React.ReactNode;
+  /** SkyWayContext の設定 */
+  config?: SkyWayContextConfig;
+  /** エラー発生時のコールバック */
+  onError?: (error: Error) => void;
+}
+
 /** SkyWayProvider が提供するコンテキスト値 */
 export interface SkyWayContextValue {
   /** SkyWayContext インスタンス（初期化前は null）*/

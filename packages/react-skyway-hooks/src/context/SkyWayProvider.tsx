@@ -2,7 +2,7 @@
 
 import { SkyWayContext } from "@skyway-sdk/room";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import type { SkyWayContextValue, SkyWayProviderProps } from "../types";
+import type { SkyWayContextValue, SkyWayProviderCoreProps, SkyWayProviderProps } from "../types";
 
 // ----------------------------------------------------------------
 // Context
@@ -113,6 +113,93 @@ export function SkyWayProvider({
       setSkywayContext(null);
     };
   }, []);
+
+  return (
+    <SkywayReactContext.Provider value={{ skywayContext, isInitializing, error }}>
+      {children}
+    </SkywayReactContext.Provider>
+  );
+}
+
+// ================================================================
+// Core版（手動トークン制御）
+// ================================================================
+
+/**
+ * SkyWay 認証コンテキストを初期化し、子コンポーネントへ提供する Core プロバイダー。
+ *
+ * Compat版（SkyWayProvider）と異なり、トークンの自動更新は行いません。
+ * トークン変更時は明示的にプロップを更新し、Context 再作成を促すか、
+ * 手動で `skywayContext.updateAuthToken(newToken)` を呼んでください。
+ *
+ * ```tsx
+ * const [token, setToken] = useState(myInitialToken);
+ *
+ * const handleTokenRefresh = (newToken: string) => {
+ *   setToken(newToken);
+ * };
+ *
+ * return (
+ *   <SkyWayProviderCore token={token}>
+ *     <App onTokenRefresh={handleTokenRefresh} />
+ *   </SkyWayProviderCore>
+ * );
+ * ```
+ */
+export function SkyWayProviderCore({ token, children, config, onError }: SkyWayProviderCoreProps) {
+  const [skywayContext, setSkywayContext] = useState<SkyWayContext | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  // cleanup 用 ref
+  const contextRef = useRef<SkyWayContext | null>(null);
+  // コールバックを ref で管理
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+
+  useEffect(() => {
+    let disposed = false;
+
+    const handleError = (err: unknown) => {
+      const normalized = err instanceof Error ? err : new Error(String(err));
+      setError(normalized);
+      onErrorRef.current?.(normalized);
+    };
+
+    const init = async () => {
+      setIsInitializing(true);
+      setError(null);
+      try {
+        // Core版は token を直接使用（自動更新なし）
+        const ctx = await SkyWayContext.Create(token, config);
+        if (disposed) {
+          ctx.dispose();
+          return;
+        }
+
+        // Core版はリスナー登録をしない（手動制御）
+        // トークン更新が必要な場合、ユーザーが以下を手動実行：
+        // - token prop 変更 → Context 再作成
+        // - または ctx.updateAuthToken(newToken) を直接呼び出し
+
+        contextRef.current = ctx;
+        setSkywayContext(ctx);
+      } catch (e) {
+        if (!disposed) handleError(e);
+      } finally {
+        if (!disposed) setIsInitializing(false);
+      }
+    };
+
+    void init();
+
+    return () => {
+      disposed = true;
+      contextRef.current?.dispose();
+      contextRef.current = null;
+      setSkywayContext(null);
+    };
+  }, [token, config]);
 
   return (
     <SkywayReactContext.Provider value={{ skywayContext, isInitializing, error }}>
